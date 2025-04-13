@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vestuario</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilo básico para el formulario emergente */
+        #form-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-height: 90%; /* Limitar la altura máxima */
+            overflow-y: auto; /* Agregar barra de desplazamiento si el contenido excede la altura */
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <h2>Menú</h2>
+        <ul>
+            <li><a href="dashboard.php">Inicio</a></li>
+            <li><a href="emergencias.html">Emergencias</a></li>
+            <li><a href="vestuario.html">Vestuario</a></li>
+            <li><a href="logout.php">Cerrar sesión</a></li>
+        </ul>
+    </div>
+    <div class="content">
+        <h2>Vestuario</h2>
+        <div class="search-box">
+            <input type="text" id="search" placeholder="Buscar...">
+            <button onclick="search()">Buscar</button>
+        </div>
+        <button onclick="toggleForm()">Agregar Nuevo</button>
+        <div id="results" style="display: none;">
+            <h3>Resultados de la Búsqueda</h3>
+            <div id="person-details">
+                <!-- Aquí se mostrarán los detalles de la persona -->
+            </div>
+        </div>
+
+        <!-- Formulario emergente para agregar nuevos datos -->
+        <div id="overlay" onclick="toggleForm()"></div>
+        <div id="form-container">
+            <h3>Agregar Nuevo Registro</h3>
+            <form action="agregar_vestuario.php" method="POST" enctype="multipart/form-data">
+                <label for="nombre">Nombre Completo:</label>
+                <input type="text" id="nombre" name="nombre" required>
+
+                <label for="runt">RUT:</label>
+                <input type="text" id="runt" name="runt" required>
+
+                <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+
+                <label for="foto">Foto de Perfil:</label>
+                <input type="file" id="foto" name="foto" accept="image/*" required>
+
+                <label for="pdf">Documento PDF:</label>
+                <input type="file" id="pdf" name="pdf" accept="application/pdf" required>
+
+                <label for="uniforme">¿Uniforme?:</label>
+                <input type="checkbox" id="uniforme" name="uniforme" onclick="toggleUniformeCategories()">
+
+                <div id="uniforme_categories" style="display: none;">
+                    <h4>Artículos del Uniforme</h4>
+                    <label for="guerrera">Guerrera:</label>
+                    <input type="checkbox" id="guerrera" name="guerrera">
+
+                    <label for="polera_servicio">Polera de Servicio:</label>
+                    <input type="checkbox" id="polera_servicio" name="polera_servicio">
+
+                    <label for="pantalon_servicio">Pantalón de Servicio:</label>
+                    <input type="checkbox" id="pantalon_servicio" name="pantalon_servicio">
+
+                    <label for="porta_equipo">Porta Equipo:</label>
+                    <input type="checkbox" id="porta_equipo" name="porta_equipo">
+
+                    <label for="quipi">Quipi:</label>
+                    <input type="checkbox" id="quipi" name="quipi">
+
+                    <label for="parca_polar">Parca Polar:</label>
+                    <input type="checkbox" id="parca_polar" name="parca_polar">
+
+                    <label for="corta_viento">Corta Viento:</label>
+                    <input type="checkbox" id="corta_viento" name="corta_viento">
+
+                    <label for="cinturon">Cinturón:</label>
+                    <input type="checkbox" id="cinturon" name="cinturon">
+
+                    <label for="cinturon_na">Cinturón N/a:</label>
+                    <input type="checkbox" id="cinturon_na" name="cinturon_na">
+
+                    <label for="botas">Botas:</label>
+                    <input type="checkbox" id="botas" name="botas">
+                    <label for="talla_botas">Talla de Botas:</label>
+                    <input type="text" id="talla_botas" name="talla_botas">
+
+                    <label for="polera_instruccion">Polera de Instrucción:</label>
+                    <input type="checkbox" id="polera_instruccion" name="polera_instruccion">
+
+                    <label for="pantalon_instruccion">Pantalón de Instrucción:</label>
+                    <input type="checkbox" id="pantalon_instruccion" name="pantalon_instruccion">
+                </div>
+
+                <button type="submit">Guardar</button>
+                <button type="button" onclick="toggleForm()">Cancelar</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+        }
+
+        function toggleForm() {
+            const formContainer = document.getElementById('form-container');
+            const overlay = document.getElementById('overlay');
+            const isVisible = formContainer.style.display === 'block';
+            formContainer.style.display = isVisible ? 'none' : 'block';
+            overlay.style.display = isVisible ? 'none' : 'block';
+        }
+
+        function toggleUniformeCategories() {
+            const uniformeCategories = document.getElementById('uniforme_categories');
+            const isChecked = document.getElementById('uniforme').checked;
+            uniformeCategories.style.display = isChecked ? 'block' : 'none';
+        }
+
+        function search() {
+            const query = document.getElementById('search').value.trim();
+            if (!query) {
+                alert("Por favor, ingresa un término de búsqueda.");
+                return;
+            }
+
+            fetch(`buscar_vestuario.php?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsContainer = document.getElementById('results');
+                    const personDetails = document.getElementById('person-details');
+                    personDetails.innerHTML = '';
+
+                    if (data.length === 0) {
+                        resultsContainer.style.display = 'none';
+                        alert("No se encontraron resultados.");
+                    } else {
+                        resultsContainer.style.display = 'block';
+                        data.forEach(person => {
+                            personDetails.innerHTML += `
+                                <div class="person">
+                                    <img src="${person.foto}" alt="Foto" width="100">
+                                    <p><strong>Nombre:</strong> ${person.nombre}</p>
+                                    <p><strong>RUT:</strong> ${person.runt}</p>
+                                    <p><strong>Fecha de Nacimiento:</strong> ${person.fecha_nacimiento}</p>
+                                    <button onclick="openUniformWindow(${JSON.stringify(person).replace(/"/g, '&quot;')})">Ver Vestuario</button>
+                                    <a href="${person.pdf}" target="_blank">Ver Documento PDF</a>
+                                </div>
+                            `;
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al realizar la búsqueda:", error);
+                    alert("Hubo un error al realizar la búsqueda.");
+                });
+        }
+
+        function openUniformWindow(person) {
+            const uniformDetails = `
+                <h3>Vestuario del Voluntario</h3>
+                <ul>
+                    <li>Uniforme Institucional: ${person.uniforme_institucional ? 'Sí' : 'No'}</li>
+                    <li>Guerrera: ${person.guerrera ? 'Sí' : 'No'}</li>
+                    <li>Polera de Servicio: ${person.polera_servicio ? 'Sí' : 'No'}</li>
+                    <li>Pantalón de Servicio: ${person.pantalon_servicio ? 'Sí' : 'No'}</li>
+                    <li>Porta Equipo: ${person.porta_equipo ? 'Sí' : 'No'}</li>
+                    <li>Quipi: ${person.quipi ? 'Sí' : 'No'}</li>
+                    <li>Parca Polar: ${person.parca_polar ? 'Sí' : 'No'}</li>
+                    <li>Corta Viento: ${person.corta_viento ? 'Sí' : 'No'}</li>
+                    <li>Cinturón: ${person.cinturon ? 'Sí' : 'No'}</li>
+                    <li>Cinturón N/a: ${person.cinturon_na ? 'Sí' : 'No'}</li>
+                    <li>Botas: ${person.botas ? `Sí (Talla: ${person.talla_botas})` : 'No'}</li>
+                    <li>Polera de Instrucción: ${person.polera_instruccion ? 'Sí' : 'No'}</li>
+                    <li>Pantalón de Instrucción: ${person.pantalon_instruccion ? 'Sí' : 'No'}</li>
+                </ul>
+            `;
+
+            const newWindow = window.open('', 'Uniform Details', 'width=400,height=600');
+            newWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Vestuario del Voluntario</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.5; padding: 20px; }
+                            ul { list-style-type: none; padding: 0; }
+                            li { margin-bottom: 8px; }
+                        </style>
+                    </head>
+                    <body>
+                        ${uniformDetails}
+                    </body>
+                </html>
+            `);
+            newWindow.document.close();
+        }
+    </script>
+</body>
+</html>

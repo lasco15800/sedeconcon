@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Comando de Incidentes</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Contenedor principal con flexbox */
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Contenedor del mapa */
+        #map {
+            height: 700px;
+            width: 85%;
+            background: #f0f0f0;
+        }
+
+        /* Botón de Despacho Emergencia */
+        .emergency-dispatch-btn {
+            width: 85%;
+            background: red;
+            color: white;
+            padding: 15px;
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .emergency-dispatch-btn:hover {
+            background: darkred;
+        }
+
+        /* Contenedor de números de emergencia */
+        .emergency-numbers {
+            width: 85%;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        /* Ajuste responsivo */
+        @media (max-width: 768px) {
+            #map, .emergency-numbers, .toggle-emergency-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <h2>Menú</h2>
+        <ul>
+            <li><a href="dashboard.php">Inicio</a></li>
+            <li><a href="emergencias.html">Emergencias</a></li>
+            <li><a href="vestuario.html">Vestuario</a></li>
+            <li><a href="logout.php">Cerrar sesión</a></li>
+        </ul>
+    </div>
+    <div class="content">
+        <div id="map"></div>
+
+        <!-- Botón de Despacho Emergencia -->
+        <button class="emergency-dispatch-btn" onclick="dispatchEmergency()">Despacho Emergencia</button>
+
+        <!-- Botón para mostrar/ocultar el panel de números de emergencia -->
+        <button class="toggle-emergency-btn" onclick="toggleEmergencyPanel()">Mostrar Números de Emergencia</button>
+
+        <div class="emergency-numbers" id="emergencyPanel">
+            <h3>Números de Emergencia</h3>
+            <div class="number">
+                <img src="carb.png" alt="Policía">
+                <div class="phone-number">133  (32) 313 2570 Policía</div>
+            </div>
+            <div class="number">
+                <img src="bomberos.png" alt="Bomberos">
+                <div class="phone-number">132   Bomberos</div>
+            </div>
+            <div class="number">
+                <img src="Sar.png" alt="Ambulancia">
+                <div class="phone-number">131  32-2811585 Ambulancia</div>
+            </div>
+            <div class="number">
+                <img src="muni.jpeg" alt="Seguridad Publica">
+                <div class="phone-number">*4122 o +569-58056824   Seguridad Publica</div>
+            </div>
+            <div class="number">
+                <img src="marina.png" alt="Rescate naval">
+                <div class="phone-number">137   Rescate naval</div>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+              // Centrar el mapa en Concón, Chile
+              var map = L.map('map').setView([-32.9294, -71.5518], 13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Función para despachar emergencia
+function dispatchEmergency() {
+    // Crear un objeto de audio para el sonido de alerta
+    const emergencySound = new Audio('alerta.mp3'); // Usa un archivo de sonido local
+    emergencySound.play();
+
+    // Esperar a que termine el sonido de alerta antes de reproducir el mensaje de voz
+    emergencySound.onended = function() {
+        // Crear el mensaje de voz
+        const speech = new SpeechSynthesisUtterance("Unidad despachada a emergencia, alistarse");
+        speech.lang = "es-ES"; // Configurar el idioma español
+        window.speechSynthesis.speak(speech); // Reproducir el mensaje de voz
+    };
+}
+    </script>
+</body>
+</html>
